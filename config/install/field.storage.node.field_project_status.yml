@@ -1,0 +1,47 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+    - edw_project
+  module:
+    - node
+    - options
+id: node.field_project_status
+field_name: field_project_status
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: cancelled
+      label: Cancelled
+    -
+      value: completed
+      label: Completed
+    -
+      value: concept-approved
+      label: 'Concept approved'
+    -
+      value: concept-proposed
+      label: 'Concept proposed'
+    -
+      value: project-approved
+      label: 'Project approved'
+    -
+      value: received-by-donor-organisation
+      label: 'Received by donor organisation'
+    -
+      value: initiated
+      label: Initiated
+    -
+      value: ongoing
+      label: Ongoing
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,46 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.project.body
+    - field.field.node.project.field_date_end
+    - field.field.node.project.field_project_approved_date
+    - field.field.node.project.field_project_budget
+    - field.field.node.project.field_project_expected_outcome
+    - field.field.node.project.field_project_short_title
+    - field.field.node.project.field_project_status
+    - field.field.node.project.field_project_url
+    - field.field.node.project.field_related_projects
+    - node.type.project
+  module:
+    - text
+    - user
+id: node.project.teaser
+targetEntityType: node
+bundle: project
+mode: teaser
+content:
+  body:
+    type: text_summary_or_trimmed
+    label: hidden
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  field_date_end: true
+  field_project_approved_date: true
+  field_project_budget: true
+  field_project_expected_outcome: true
+  field_project_short_title: true
+  field_project_status: true
+  field_project_url: true
+  field_related_projects: true
+  langcode: true

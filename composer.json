@@ -1,0 +1,13 @@
+{
+    "name": "eaudeweb/edw_project",
+    "description": "Enable the project module to provide content managers with the ability to manage projects within Drupal",
+    "type": "drupal-module",
+    "authors": [
+        {
+            "name": "dtabirca",
+            "email": "dtabirca@1029792.no-reply.drupal.org"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}

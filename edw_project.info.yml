@@ -1,0 +1,5 @@
+name: 'EDW Project content type'
+type: module
+core_version_requirement: ^9 || ^10 || ^11
+package: Eau de Web
+description: 'Creates the Project content type'
