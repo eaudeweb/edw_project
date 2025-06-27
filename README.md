@@ -8,12 +8,12 @@ Enable the project module to provide content managers with the ability to manage
 ```
 {
     "type": "git",
-    "url": "https://github.com/eaudeweb/edw_blocks.git"
+    "url": "https://github.com/eaudeweb/edw_project.git"
 }
 ```
 
 2. Run
-   ```composer require eaudeweb/edw_blocks:^1.0```
+   ```composer require eaudeweb/edw_project:^1.0```
 
 3. Enable the module:
    ``drush en edw_blocks``

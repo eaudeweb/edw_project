@@ -9,5 +9,7 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {}
+    "require": {
+        "drupal/core": "^9 || ^10 || ^11"
+    }
 }
