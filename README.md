@@ -16,7 +16,7 @@ Enable the project module to provide content managers with the ability to manage
    ```composer require eaudeweb/edw_project:^1.0```
 
 3. Enable the module:
-   ``drush en edw_blocks``
+   ``drush en edw_project``
 
 ### Fields
 
