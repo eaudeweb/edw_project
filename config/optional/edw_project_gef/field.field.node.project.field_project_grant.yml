@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_project_grant
+    - node.type.project
+id: node.project.field_project_grant
+field_name: field_project_grant
+entity_type: node
+bundle: project
+label: 'GEF Project Grant '
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: USD
+field_type: integer
