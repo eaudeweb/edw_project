@@ -1,0 +1,32 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_data_source
+    - node.type.project
+    - taxonomy.vocabulary.data_sources
+  content:
+    - 'taxonomy_term:data_sources:01efd2e0-bc20-45d3-831c-dfd21db5c83e'
+id: node.project.field_data_source
+field_name: field_data_source
+entity_type: node
+bundle: project
+label: 'Data source'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    target_uuid: 01efd2e0-bc20-45d3-831c-dfd21db5c83e
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      data_sources: data_sources
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

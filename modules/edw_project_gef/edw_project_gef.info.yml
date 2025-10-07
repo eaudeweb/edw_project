@@ -1,0 +1,7 @@
+name: 'EDW Project content type - GEF'
+type: module
+core_version_requirement: ^9 || ^10 || ^11
+package: Eau de Web
+description: 'Added required field for GEF Project'
+dependencies:
+  - drupal:migrate_plus

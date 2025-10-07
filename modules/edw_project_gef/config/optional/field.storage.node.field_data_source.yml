@@ -3,17 +3,16 @@ status: true
 dependencies:
   module:
     - node
-id: node.field_executing_agencies
-field_name: field_executing_agencies
+    - taxonomy
+id: node.field_data_source
+field_name: field_data_source
 entity_type: node
-type: string
+type: entity_reference
 settings:
-  max_length: 255
-  case_sensitive: false
-  is_ascii: false
+  target_type: taxonomy_term
 module: core
 locked: false
-cardinality: -1
+cardinality: 5
 translatable: false
 indexes: {  }
 persist_with_no_fields: false

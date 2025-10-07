@@ -25,11 +25,17 @@ settings:
     -
       value: special_climate_change_fund
       label: 'Special Climate Change Fund'
+    -
+      value: cbit_trust_fund
+      label: 'CBIT Trust Fund'
+    -
+      value: npif
+      label: NPIF
   allowed_values_function: ''
 module: options
 locked: false
 cardinality: -1
-translatable: false
+translatable: true
 indexes: {  }
 persist_with_no_fields: false
 custom_storage: false

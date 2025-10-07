@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Provides custom functionality for GEF Projects resources.
+ */
+
+use Drupal\migrate\MigrateMessage;
+use Drupal\migrate\Plugin\MigrationInterface;
+use Drupal\migrate_tools\MigrateExecutable;
+
+
+/**
+ * Implements hook_cron().
+ */
+function gef_projects_cron() {
+  $migration_manager = \Drupal::service('plugin.manager.migration');
+  $migration = $migration_manager->createInstance('gef_projects');
+  if (empty($migration)) {
+    return;
+  }
+
+  if ($migration->getStatus() !== MigrationInterface::STATUS_IDLE) {
+    $migration->setStatus(MigrationInterface::STATUS_IDLE);
+  }
+  $migration->getIdMap()->prepareUpdate();
+  // $migration->set('syncSource', TRUE);
+  $executable = new MigrateExecutable($migration, new MigrateMessage());
+  $executable->import();
+}
