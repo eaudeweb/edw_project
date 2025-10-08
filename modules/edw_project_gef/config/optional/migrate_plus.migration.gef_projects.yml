@@ -1,3 +1,4 @@
+uid: 0dbbb86b-7234-4562-a2d7-c11ad1fdb041
 langcode: en
 status: true
 dependencies: {  }
@@ -30,13 +31,10 @@ source:
       name: body
       selector: projectDescription
     -
-      name: field_project_phase
-      selector: LatestTimelineStatus
-    -
       name: field_project_status
       selector: LatestTimelineStatus
     -
-      name: field_project_implementing_orgs
+      name: field_implementing_agencies
       selector: implAgencies
     -
       name: field_executing_agencies
@@ -45,28 +43,22 @@ source:
       name: field_trust_fund
       selector: trustFundName
     -
-      name: field_gef_project_phase
+      name: field_project_phase
       selector: GEFPhase
     -
       name: field_project_type
       selector: projectType
     -
-      name: field_gef_project_type
-      selector: projectType
-    -
       name: field_topics
       selector: focalAreas
     -
-      name: field_gef_project_grant
+      name: field_project_grant
       selector: GEFAmountLatest
     -
-      name: field_gef_cofinancing
+      name: field_cofinancing_total
       selector: CofinAmountLatest
     -
       name: field_date
-      selector: ApprovalFY
-    -
-      name: field_project_approved_date
       selector: ApprovalFY
   ids:
     field_original_id:
@@ -77,46 +69,20 @@ process:
   field_countries:
     plugin: entity_lookup
     source: field_countries
-    entity_type: taxonomy_term
-    bundle_key: vid
-    bundle: countries
-    value_key: field_iso_2l
+    entity_type: node
+    bundle_key: type
+    bundle: country
+    value_key: field_country_iso2
     ignore_case: true
     strict: false
-  field_project_mechanism:
-    -
-      plugin: default_value
-      default_value: GEF
   body: body
-  field_link/uri: field_url
-  field_project_phase: field_project_phase
-  field_project_implementing_orgs:
-    plugin: entity_lookup
-    source: field_project_implementing_orgs
-    entity_type: taxonomy_term
-    bundle_key: vid
-    bundle: organizations
-    value_key: name
-    ignore_case: true
-    strict: false
+  field_url: field_url
+  field_project_status: field_project_status
+  field_implementing_agencies: field_implementing_agencies
   field_executing_agencies: field_executing_agencies
   field_trust_fund: field_trust_fund
-  field_gef_project_phase: field_gef_project_phase
-  field_gef_project_type:
-    - plugin: null_coalesce
-      source:
-        - field_gef_project_type
-        - field_project_type
-    - plugin: callback
-      callable: trim
-    - plugin: static_map
-      map:
-        "Medium-size Project": medium-size
-        "Full-size Project": full-size
-        "PFD": pfd
-        "Enabling Activity": enabling-activity
-        "GBFF": gbff
-      bypass: true
+  field_project_phase: field_project_phase
+  field_project_type: field_project_type
   field_topics:
     -
       plugin: static_map
@@ -138,12 +104,12 @@ process:
       bundle: topics
       entity_type: taxonomy_term
       ignore_case: true
-  field_gef_project_grant: field_gef_project_grant
-  field_gef_cofinancing: field_gef_cofinancing
-  field_project_approved_date: field_date
+  field_project_grant: field_project_grant
+  field_cofinancing_total: field_cofinancing_total
+  field_date: field_date
   translated_values: translated_values
 destination:
-  plugin: 'entity:node'
+  plugin: translated_node
   default_bundle: project
-  translations: true
+  match_by_uuid: id
 migration_dependencies: {  }
