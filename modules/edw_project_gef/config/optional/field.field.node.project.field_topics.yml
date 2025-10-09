@@ -4,7 +4,6 @@ dependencies:
   config:
     - field.storage.node.field_topics
     - node.type.project
-    - taxonomy.vocabulary.topics
 id: node.project.field_topics
 field_name: field_topics
 entity_type: node

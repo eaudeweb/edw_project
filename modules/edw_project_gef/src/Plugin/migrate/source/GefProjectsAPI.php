@@ -5,7 +5,6 @@ namespace Drupal\edw_project_gef\Plugin\migrate\source;
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Logger\RfcLogLevel;
-use Drupal\facets\Exception\Exception;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate\Row;

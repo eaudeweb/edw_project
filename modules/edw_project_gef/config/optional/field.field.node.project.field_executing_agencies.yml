@@ -4,15 +4,6 @@ dependencies:
   config:
     - field.storage.node.field_executing_agencies
     - node.type.project
-  module:
-    - field_config_cardinality
-third_party_settings:
-  field_config_cardinality:
-    cardinality_config: '1'
-    cardinality_label_config: false
-    unlimited_not_required: ''
-    limited_not_required: ''
-    limited_required: ''
 id: node.project.field_executing_agencies
 field_name: field_executing_agencies
 entity_type: node
