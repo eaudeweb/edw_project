@@ -4,4 +4,5 @@ core_version_requirement: ^9 || ^10 || ^11
 package: Eau de Web
 description: 'Added required field for GEF Project'
 dependencies:
+  - eaudeweb:edw_project
   - drupal:migrate_plus
