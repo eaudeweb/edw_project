@@ -13,7 +13,7 @@ use Drupal\migrate_tools\MigrateExecutable;
 /**
  * Implements hook_cron().
  */
-function gef_projects_cron() {
+function edw_project_gef_cron() {
   $migration_manager = \Drupal::service('plugin.manager.migration');
   $migration = $migration_manager->createInstance('gef_projects');
   if (empty($migration)) {
