@@ -24,7 +24,6 @@ function edw_project_gef_cron() {
     $migration->setStatus(MigrationInterface::STATUS_IDLE);
   }
   $migration->getIdMap()->prepareUpdate();
-  // $migration->set('syncSource', TRUE);
   $executable = new MigrateExecutable($migration, new MigrateMessage());
   $executable->import();
 }
