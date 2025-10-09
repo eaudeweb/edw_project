@@ -2,7 +2,6 @@
 
 namespace Drupal\edw_project_gef\Plugin\migrate\source;
 
-use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\field\Entity\FieldConfig;
@@ -10,7 +9,6 @@ use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate\Row;
 use Drupal\migrate_plus\Plugin\migrate\source\Url;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\State\StateInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use GuzzleHttp\ClientInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -33,25 +31,11 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
   protected $currentRowData;
 
   /**
-   * The state key/value store.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected StateInterface $state;
-
-  /**
    * The HTTP client to fetch the feed data with.
    *
    * @var \GuzzleHttp\ClientInterface
    */
   protected ClientInterface $httpClient;
-
-  /**
-   * The data parser plugin manager.
-   *
-   * @var \Drupal\Component\Plugin\PluginManagerInterface
-   */
-  protected PluginManagerInterface $dataParserManager;
 
   /**
    * The logger service.
@@ -60,16 +44,12 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
    */
   protected LoggerChannelInterface $logger;
 
-
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $pluginId, $pluginDefinition, MigrationInterface $migration, StateInterface $state, ClientInterface $httpClient, PluginManagerInterface $dataParserManager, LoggerChannelInterface $logger) {
-    $this->state = $state;
+  public function __construct(array $configuration, $pluginId, $pluginDefinition, MigrationInterface $migration, ClientInterface $httpClient, LoggerChannelInterface $logger) {
     $this->httpClient = $httpClient;
-    $this->dataParserManager = $dataParserManager;
     $this->logger = $logger;
-
     $configuration['headers']['accept'] = 'application/json';
     $configuration['base_url'] = $configuration['url'];
     $configuration['ids'] = $this->getIds();
@@ -97,9 +77,7 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
       $plugin_id,
       $plugin_definition,
       $migration,
-      $container->get('state'),
       $container->get('http_client'),
-      $container->get('plugin.manager.migrate_plus.data_parser'),
       $container->get('logger.factory')->get('gef_projects')
     );
   }
@@ -108,64 +86,39 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
    * {@inheritdoc}
    */
   public function prepareRow(Row $row) {
-    $url = $this->configuration['url'];
-    $parse = parse_url($url);
-    $base_url = $parse['scheme'] . '://' . $parse['host'];
-    $row->setSourceProperty('base_url', $base_url);
     $this->currentRowData = $row;
-    foreach (['title', 'body', 'field_executing_agencies'] as $field) {
-      $value = $row->getSourceProperty($field);
+    foreach (['title', 'body', 'field_executing_agencies'] as $fieldName) {
+      $value = $row->getSourceProperty($fieldName);
       if (empty($value)) {
         continue;
       }
-
-      if (is_string($value)) {
-        $value = Html::decodeEntities($value);
-      }
-      else {
-        foreach ($value as &$array_value) {
-          if (!is_string($array_value)) {
-            continue;
-          }
-
-          $array_value = Html::decodeEntities($array_value);
-        }
-      }
-      $row->setSourceProperty($field, $value);
+      $value = Html::decodeEntities($value);
+      $row->setSourceProperty($fieldName, $value);
     }
 
+    $date = NULL;
     if (!empty($row->getSourceProperty('field_date')) || is_string($row->getSourceProperty('field_date'))) {
       if (preg_match('/datetime="(\d{4}-\d{2}-\d{2})T/', $row->getSourceProperty('field_date'), $matches)) {
-        $date = $matches[1];
-        if ($date && $date !== '1970-01-01') $row->setSourceProperty('field_date', $date);
-        else $row->setSourceProperty('field_date', NULL);
+        $date = ($matches[1] && $matches[1] !== '1970-01-01') ? $date : NULL;
       } else {
         $this->log('Invalid date pattern');
       }
     }
-    else $row->setSourceProperty('field_date', NULL);
+    $row->setSourceProperty('field_date', $date);
 
-    $modifiedUrl = 'https://www.thegef.org/projects-operations/projects/' . trim((string) $row->getSourceProperty('field_original_id'));
-    $row->setSourceProperty('field_url', $modifiedUrl);
+    $gefUrl = sprintf("https://www.thegef.org/projects-operations/projects/%s", trim((string) $row->getSourceProperty('field_original_id')));
+    $row->setSourceProperty('field_url', $gefUrl);
     foreach (['field_project_status', 'field_trust_fund', 'field_project_phase', 'field_project_type'] as $fieldName) {
       $value = $row->getSourceProperty($fieldName);
       if (empty($value)) {
         continue;
       }
 
-      $normalizedValue = mb_strtolower(trim($value));
       $field = FieldConfig::loadByName('node', 'project', $fieldName);
       if ($field) {
         $allowed = $field->getSetting('allowed_values');
-        $matchedKey = NULL;
-        foreach ($allowed as $key => $label) {
-          if (mb_strtolower($label) === $normalizedValue || mb_strtolower($key) === $normalizedValue) {
-            $matchedKey = $key;
-            break;
-          }
-        }
-
-        if ($matchedKey !== NULL) {
+        $matchedKey = array_search($value, $allowed);
+        if (!empty($matchedKey)) {
           $row->setSourceProperty($fieldName, $matchedKey);
         }
         else {
@@ -173,64 +126,34 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
         }
       }
     }
-    foreach (['field_implementing_agencies', 'field_countries', 'field_topics'] as $fieldName) {
-      $raw = $row->getSourceProperty($fieldName);
+
+    if ($row->getSourceProperty('field_countries')) {
+      $countriesIso = $row->getSourceProperty('field_countries');
+      $countriesIso = Html::decodeEntities($countriesIso);
+      $countriesIso = array_map('trim', explode(',', $countriesIso));
+      $countriesIso = array_filter($countriesIso);
+      $row->setSourceProperty('field_countries', $countriesIso);
+    }
+
+    if ($row->getSourceProperty('field_implementing_agencies')) {
+      $sourceValue = $row->getSourceProperty('field_implementing_agencies');
+      $sourceValue = array_map('trim', explode(',', $sourceValue));
+      $sourceValue = array_filter($sourceValue);
+      $field = FieldConfig::loadByName('node', 'project', 'field_implementing_agencies');
+      $allowed = $field->getSetting('allowed_values');
       $targets = [];
-
-      if (is_string($raw) && $raw !== '') {
-        if ($fieldName === 'field_countries') {
-          $raw = Html::decodeEntities($raw);
+      foreach ($sourceValue as $item) {
+        $agencies = array_search($item, $allowed, TRUE);
+        if ($agencies === FALSE) {
+          $this->log('Invalid value for field_implementing_agencies: ' . $item);
+          continue;
         }
-
-        $values = array_map('trim', explode(',', $raw));
-        $values = array_filter($values);
-        foreach ($values as $item) {
-          switch ($fieldName) {
-            case 'field_topics':
-              if ($this->validateTopic($item)) {
-                $targets[] = $item;
-              } else {
-                $this->log("Invalid topic: {$item}");
-              }
-              break;
-
-            case 'field_countries':
-              $targets[] = $item;
-              break;
-
-            case 'field_implementing_agencies':
-              $field = FieldConfig::loadByName('node', 'project', 'field_implementing_agencies');
-              $allowed = $field->getSetting('allowed_values');
-              $agencies = array_search($item, $allowed, TRUE);
-              if ($agencies === FALSE) {
-                $this->log('Invalid value for field_implementing_agencies: ' . $item);
-                break;
-              }
-              $targets[] = $agencies;
-              break;
-          }
-        }
+        $targets[] = $agencies;
       }
-      $row->setSourceProperty($fieldName, $targets);
+      $row->setSourceProperty('field_implementing_agencies', $targets);
     }
 
     return parent::prepareRow($row);
-  }
-
-  public function validateTopic($topics): bool {
-    $map = [
-      'Biodiversity',
-      'Chemicals and Waste',
-      'Climate Change',
-      'International Waters',
-      'Land Degradation',
-      'Ozone Depleting Substances',
-      'POPs',
-      'Multi Focal Area',
-    ];
-
-    if (!in_array($topics, $map)) return FALSE;
-    return TRUE;
   }
 
   /**
@@ -241,16 +164,13 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
     $page = 0;
     while(TRUE) {
       try {
-        $response = \Drupal::httpClient()
+        $response = $this->httpClient
           ->get($this->configuration['base_url'] . '?page='. $page, $this->configuration['headers']);
-
         $data = json_decode($response->getBody());
-
         $countThisPage = count($data);
         if($countThisPage === 0) {
           break;
         }
-
         $total += $countThisPage;
         $page++;
         if ($page >= 200) {
@@ -265,8 +185,6 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
 
     return $total;
   }
-
-
 
   /**
    * {@inheritdoc}
