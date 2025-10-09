@@ -6,3 +6,4 @@ description: 'Added required field for GEF Project'
 dependencies:
   - eaudeweb:edw_project
   - drupal:migrate_plus
+  - drupal:migrate_tools
