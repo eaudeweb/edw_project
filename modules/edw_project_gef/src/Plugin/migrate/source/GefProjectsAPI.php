@@ -106,7 +106,7 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
     }
     $row->setSourceProperty('field_date', $date);
 
-    $gefUrl = sprintf("https://www.thegef.org/projects-operations/projects/%s", trim((string) $row->getSourceProperty('field_original_id')));
+    $gefUrl = sprintf("https://www.thegef.org/projects-operations/projects/%s", trim((string)$row->getSourceProperty('field_original_id')));
     $row->setSourceProperty('field_url', $gefUrl);
     foreach (['field_project_status', 'field_trust_fund', 'field_project_phase', 'field_project_type'] as $fieldName) {
       $value = $row->getSourceProperty($fieldName);
@@ -120,8 +120,7 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
         $matchedKey = array_search($value, $allowed);
         if (!empty($matchedKey)) {
           $row->setSourceProperty($fieldName, $matchedKey);
-        }
-        else {
+        } else {
           $this->log('Invalid value for ' . $fieldName . ': ' . $value);
         }
       }
@@ -160,23 +159,16 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
    * {@inheritdoc}
    */
   public function count($refresh = FALSE) {
-    $total = 0;
-    $page = 0;
-    while(TRUE) {
+    $total = $page = 0;
+    while (TRUE) {
       try {
-        $response = $this->httpClient
-          ->get($this->configuration['base_url'] . '?page='. $page, $this->configuration['headers']);
+        $response = $this->httpClient->get($this->configuration['base_url'] . '?page=' . $page, $this->configuration['headers']);
         $data = json_decode($response->getBody());
-        $countThisPage = count($data);
-        if($countThisPage === 0) {
+        if (empty($data) || (is_array($data) && count($data) === 0) || (is_object($data) && (array)$data === [])) {
           break;
         }
-        $total += $countThisPage;
+        $total += count($data);
         $page++;
-        if ($page >= 200) {
-          $this->log('Stopped counting after @n pages to avoid infinite loop.', ['@n' => $page]);
-          break;
-        }
       } catch (\Exception $e) {
         $this->log('Error: @e.', ['@e' => $e]);
         return -1;
