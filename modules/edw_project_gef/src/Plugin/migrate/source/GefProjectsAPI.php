@@ -53,7 +53,7 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
     $configuration['headers']['accept'] = 'application/json';
     $configuration['base_url'] = $configuration['url'];
     $configuration['ids'] = $this->getIds();
-    $configuration['data_parser_plugin'] = $configuration['data_parser_plugin'] ?? 'json';
+    $configuration['data_parser_plugin'] = 'gef_projects_json';
     $configuration['data_fetcher_plugin'] = $configuration['data_fetcher_plugin'] ?? 'http';
 
     $configuration['pager'] = $configuration['pager'] ?? [
@@ -208,4 +208,5 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
     }
     $this->logger->log($level, $message);
   }
+
 }
