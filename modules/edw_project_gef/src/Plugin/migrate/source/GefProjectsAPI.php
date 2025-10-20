@@ -4,6 +4,7 @@ namespace Drupal\edw_project_gef\Plugin\migrate\source;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Logger\RfcLogLevel;
+use Drupal\Core\State\StateInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate\Row;
@@ -45,16 +46,25 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
   protected LoggerChannelInterface $logger;
 
   /**
+   * State service for retrieving database info.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $pluginId, $pluginDefinition, MigrationInterface $migration, ClientInterface $httpClient, LoggerChannelInterface $logger) {
+  public function __construct(array $configuration, $pluginId, $pluginDefinition, MigrationInterface $migration, ClientInterface $httpClient, LoggerChannelInterface $logger, StateInterface $state) {
     $this->httpClient = $httpClient;
     $this->logger = $logger;
+    $this->state = $state;
     $configuration['headers']['accept'] = 'application/json';
     $configuration['base_url'] = $configuration['url'];
     $configuration['ids'] = $this->getIds();
     $configuration['data_parser_plugin'] = 'gef_projects_json';
     $configuration['data_fetcher_plugin'] = $configuration['data_fetcher_plugin'] ?? 'http';
+    $configuration['last_run'] = $state->get($configuration['last_run_key']);
 
     $configuration['pager'] = $configuration['pager'] ?? [
       'type' => 'paginator',
@@ -78,7 +88,8 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
       $plugin_definition,
       $migration,
       $container->get('http_client'),
-      $container->get('logger.factory')->get('gef_projects')
+      $container->get('logger.factory')->get('gef_projects'),
+      $container->get('state')
     );
   }
 

@@ -19,6 +19,9 @@ source:
     body: body
   fields:
     -
+      name: changed
+      selector: changed
+    -
       name: field_original_id
       selector: GEFProjectID
     -

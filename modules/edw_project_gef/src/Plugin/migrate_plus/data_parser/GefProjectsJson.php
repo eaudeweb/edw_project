@@ -32,4 +32,22 @@ class GefProjectsJson extends Json {
     return parent::getNextUrls($url);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function fetchNextRow(): void {
+    $current = $this->iterator->current();
+    if ($current) {
+      if (!empty($current['changed'] && !empty($this->configuration['last_run']))) {
+        preg_match('/datetime="([^"]+)"/', $current['changed'], $changed);
+        $updated = $changed[1];
+        if (!empty($this->configuration['last_run']) && $updated < date('Y-m-d\TH:i:s', $this->configuration['last_run'])) {
+          $this->currentItem = NULL;
+          return;
+        }
+      }
+      parent::fetchNextRow();
+    }
+  }
+
 }
