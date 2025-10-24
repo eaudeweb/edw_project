@@ -110,7 +110,7 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
     $date = NULL;
     if (!empty($row->getSourceProperty('field_date')) || is_string($row->getSourceProperty('field_date'))) {
       if (preg_match('/datetime="(\d{4}-\d{2}-\d{2})T/', $row->getSourceProperty('field_date'), $matches)) {
-        $date = ($matches[1] && $matches[1] !== '1970-01-01') ? $date : NULL;
+        $date = ($matches[1] && $matches[1] !== '1970-01-01') ? $matches[1] : NULL;
       } else {
         $this->log('Invalid date pattern');
       }
