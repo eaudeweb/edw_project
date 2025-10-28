@@ -1,0 +1,41 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_trust_fund
+field_name: field_trust_fund
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: gef_trust_fund
+      label: 'GEF Trust Fund'
+    -
+      value: global_biodiversity_framework_fund
+      label: 'Global Biodiversity Framework Fund'
+    -
+      value: least_developed_countries_fund
+      label: 'Least Developed Countries Fund'
+    -
+      value: multi_trust_fund
+      label: 'Multi Trust Fund'
+    -
+      value: special_climate_change_fund
+      label: 'Special Climate Change Fund'
+    -
+      value: cbit_trust_fund
+      label: 'CBIT Trust Fund'
+    -
+      value: npif
+      label: NPIF
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,118 @@
+uid: 0dbbb86b-7234-4562-a2d7-c11ad1fdb041
+langcode: en
+status: true
+dependencies: {  }
+id: gef_projects
+class: null
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags: null
+migration_group: default
+label: null
+source:
+  plugin: gef_projects
+  url: 'https://www.thegef.org/projects-operations/database/export/json'
+  urls: 'https://www.thegef.org/projects-operations/database/export/json'
+  item_selector: 0
+  translated_fields:
+    title: title
+    body: body
+  fields:
+    -
+      name: changed
+      selector: changed
+    -
+      name: field_original_id
+      selector: GEFProjectID
+    -
+      name: title
+      selector: ProjectName
+    -
+      name: field_countries
+      selector: field_country_code
+    -
+      name: body
+      selector: projectDescription
+    -
+      name: field_project_status
+      selector: LatestTimelineStatus
+    -
+      name: field_implementing_agencies
+      selector: implAgencies
+    -
+      name: field_executing_agencies
+      selector: ExecutingAgencies
+    -
+      name: field_trust_fund
+      selector: trustFundName
+    -
+      name: field_project_phase
+      selector: GEFPhase
+    -
+      name: field_project_type
+      selector: projectType
+    -
+      name: field_topics
+      selector: focalAreas
+    -
+      name: field_project_grant
+      selector: GEFAmountLatest
+    -
+      name: field_cofinancing_total
+      selector: CofinAmountLatest
+    -
+      name: field_date
+      selector: ApprovalFY
+  ids:
+    field_original_id:
+      type: string
+process:
+  field_original_id: field_original_id
+  title: title
+  field_countries:
+    plugin: entity_lookup
+    source: field_countries
+    entity_type: node
+    bundle_key: type
+    bundle: country
+    value_key: field_country_iso2
+    ignore_case: true
+    strict: false
+  body: body
+  field_url: field_url
+  field_project_status: field_project_status
+  field_implementing_agencies: field_implementing_agencies
+  field_executing_agencies: field_executing_agencies
+  field_trust_fund: field_trust_fund
+  field_project_phase: field_project_phase
+  field_project_type: field_project_type
+  field_topics:
+    -
+      plugin: static_map
+      source: field_topics
+      map:
+        Biodiversity: 'Biological diversity'
+        'Chemicals and Waste': 'Chemicals and Waste'
+        'Climate Change': 'Climate and Atmosphere'
+        'International Waters': 'Marine and Freshwater'
+        'Land Degradation': 'Land and Agriculture'
+        'Ozone Depleting Substances': 'Climate and Atmosphere'
+        POPs: 'Chemicals and Waste'
+        'Multi Focal Area': __UNMAPPED__
+      default_value: __UNMAPPED__
+    -
+      plugin: entity_lookup
+      value_key: name
+      bundle_key: vid
+      bundle: topics
+      entity_type: taxonomy_term
+      ignore_case: true
+  field_project_grant: field_project_grant
+  field_cofinancing_total: field_cofinancing_total
+  field_date: field_date
+  translated_values: translated_values
+destination:
+  plugin: translated_node
+  default_bundle: project
+  match_by_uuid: id
+migration_dependencies: {  }

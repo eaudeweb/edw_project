@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Provides custom functionality for GEF Projects resources.
+ */
+
+use Drupal\migrate\MigrateMessage;
+use Drupal\migrate\Plugin\MigrationInterface;
+use Drupal\migrate_tools\MigrateExecutable;
+
+
+/**
+ * Implements hook_cron().
+ */
+function edw_project_gef_cron() {
+  $state = \Drupal::state();
+  if ($state->get("edw_project_gef.last_update", 0) >= (time() - 60 * 60 * 24 * 7)) {
+    return;
+  }
+  $migration_manager = \Drupal::service('plugin.manager.migration');
+  $migration = $migration_manager->createInstance('gef_projects');
+  if (empty($migration)) {
+    return;
+  }
+
+  if ($migration->getStatus() !== MigrationInterface::STATUS_IDLE) {
+    $migration->setStatus(MigrationInterface::STATUS_IDLE);
+  }
+  $migration->getIdMap()->prepareUpdate();
+  $executable = new MigrateExecutable($migration, new MigrateMessage());
+  $executable->import();
+  $state->set('edw_project_gef.last_update', \Drupal::time()->getRequestTime());
+}

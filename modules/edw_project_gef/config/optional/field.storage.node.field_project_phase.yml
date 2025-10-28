@@ -1,0 +1,47 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_project_phase
+field_name: field_project_phase
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: gef_8
+      label: 'GEF - 8'
+    -
+      value: gef_7
+      label: 'GEF - 7'
+    -
+      value: gef_6
+      label: 'GEF - 6'
+    -
+      value: gef_5
+      label: 'GEF - 5'
+    -
+      value: gef_4
+      label: 'GEF - 4'
+    -
+      value: gef_3
+      label: 'GEF - 3'
+    -
+      value: gef_2
+      label: 'GEF - 2'
+    -
+      value: gef_1
+      label: 'GEF - 1'
+    -
+      value: pilot_phase
+      label: 'Pilot Phase'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: false
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
