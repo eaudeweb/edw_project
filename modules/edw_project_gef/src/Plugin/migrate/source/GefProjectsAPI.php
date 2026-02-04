@@ -57,8 +57,7 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
    * {@inheritdoc}
    */
   public function __construct(
-    array $configuration, $pluginId, $pluginDefinition, MigrationInterface $migration, ClientInterface $httpClient, LoggerChannelInterface $logger, StateInterface $state, DataParserPluginManager  $parserPluginManager = NULL
-  ) {
+    array $configuration, $pluginId, $pluginDefinition, MigrationInterface $migration, ClientInterface $httpClient, LoggerChannelInterface $logger, StateInterface $state, DataParserPluginManager  $parserPluginManager = NULL) {
     $this->httpClient = $httpClient;
     $this->logger = $logger;
     $this->state = $state;
