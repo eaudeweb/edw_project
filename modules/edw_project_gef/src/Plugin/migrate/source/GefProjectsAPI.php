@@ -8,6 +8,7 @@ use Drupal\Core\State\StateInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate\Row;
+use Drupal\migrate_plus\DataParserPluginManager;
 use Drupal\migrate_plus\Plugin\migrate\source\Url;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
@@ -55,7 +56,9 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $pluginId, $pluginDefinition, MigrationInterface $migration, ClientInterface $httpClient, LoggerChannelInterface $logger, StateInterface $state) {
+  public function __construct(
+    array $configuration, $pluginId, $pluginDefinition, MigrationInterface $migration, ClientInterface $httpClient, LoggerChannelInterface $logger, StateInterface $state, DataParserPluginManager  $parserPluginManager = NULL
+  ) {
     $this->httpClient = $httpClient;
     $this->logger = $logger;
     $this->state = $state;
@@ -75,13 +78,17 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
 
     $configuration['item_selector'] = $configuration['item_selector'] ?? 'value';
 
-    parent::__construct($configuration, $pluginId, $pluginDefinition, $migration);
+    if (!isset($configuration['urls']) && isset($configuration['url'])) {
+      $configuration['urls'] = [$configuration['url']];
+    }
+
+    parent::__construct($configuration, $pluginId, $pluginDefinition, $migration, $parserPluginManager);
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition, MigrationInterface $migration = NULL) {
+  public static function create($container, array $configuration, $plugin_id, $plugin_definition, ?MigrationInterface $migration = NULL) {
     return new static(
       $configuration,
       $plugin_id,
@@ -89,7 +96,8 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
       $migration,
       $container->get('http_client'),
       $container->get('logger.factory')->get('gef_projects'),
-      $container->get('state')
+      $container->get('state'),
+      $container->get('plugin.manager.migrate_plus.data_parser'),
     );
   }
 
