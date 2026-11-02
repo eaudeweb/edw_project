@@ -36,18 +36,31 @@ class GefProjectsJson extends Json {
    * {@inheritdoc}
    */
   protected function fetchNextRow(): void {
-    $current = $this->iterator->current();
-    if ($current) {
-      if (!empty($current['changed'] && !empty($this->configuration['last_run']))) {
-        preg_match('/datetime="([^"]+)"/', $current['changed'], $changed);
-        $updated = $changed[1];
-        if (!empty($this->configuration['last_run']) && $updated < date('Y-m-d\TH:i:s', $this->configuration['last_run'])) {
-          $this->currentItem = NULL;
-          return;
-        }
+    // Skip rows not changed since the last run. The API is sorted by project
+    // ID, not by change date, so an old row must not end the current page.
+    if (!empty($this->configuration['last_run'])) {
+      while (is_array($current = $this->iterator->current()) && $this->isUnchanged($current)) {
+        $this->iterator->next();
       }
-      parent::fetchNextRow();
     }
+    parent::fetchNextRow();
+  }
+
+  /**
+   * Checks whether a row was not changed since the last run.
+   *
+   * @param array $row
+   *   The raw row from the API.
+   *
+   * @return bool
+   *   TRUE if the row has a change date older than the last run.
+   */
+  protected function isUnchanged(array $row): bool {
+    if (empty($row['changed']) || !preg_match('/datetime="([^"]+)"/', $row['changed'], $changed)) {
+      return FALSE;
+    }
+    $updated = strtotime($changed[1]);
+    return $updated !== FALSE && $updated < $this->configuration['last_run'];
   }
 
 }
