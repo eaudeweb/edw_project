@@ -19,7 +19,9 @@ function edw_project_gef_cron() {
     return;
   }
   $migration_manager = \Drupal::service('plugin.manager.migration');
-  $migration = $migration_manager->createInstance('gef_projects');
+  $migration = $migration_manager->createInstance('gef_projects', [
+    'source' => ['last_run_key' => 'edw_project_gef.last_update'],
+  ]);
   if (empty($migration)) {
     return;
   }
