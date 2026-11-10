@@ -66,7 +66,7 @@ class GefProjectsAPI extends Url implements ContainerFactoryPluginInterface {
     $configuration['ids'] = $this->getIds();
     $configuration['data_parser_plugin'] = 'gef_projects_json';
     $configuration['data_fetcher_plugin'] = $configuration['data_fetcher_plugin'] ?? 'http';
-    $configuration['last_run'] = $state->get($configuration['last_run_key']);
+    $configuration['last_run'] = !empty($configuration['last_run_key']) ? $state->get($configuration['last_run_key']) : NULL;
 
     $configuration['pager'] = $configuration['pager'] ?? [
       'type' => 'paginator',
